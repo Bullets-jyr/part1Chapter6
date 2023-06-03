@@ -1,5 +1,7 @@
 package kr.co.bullets.part1chapter6
 
+import android.media.AudioManager
+import android.media.ToneGenerator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -56,6 +58,7 @@ class MainActivity : AppCompatActivity() {
             lap()
         }
         initCountdownViews()
+        binding.lapContainerLinearLayout.removeAllViews()
     }
 
     private fun initCountdownViews() {
@@ -89,6 +92,11 @@ class MainActivity : AppCompatActivity() {
                     binding.countdownProgressBar.progress = process.toInt()
                 }
             }
+
+            if (currentDeciSecond == 0 && currentCountdownDeciSecond < 31 && currentCountdownDeciSecond % 10 == 0) {
+                val toneType = if (currentCountdownDeciSecond == 0) ToneGenerator.TONE_CDMA_HIGH_L else ToneGenerator.TONE_CDMA_ANSWER
+                ToneGenerator(AudioManager.STREAM_ALARM, ToneGenerator.MAX_VOLUME).startTone(toneType, 100)
+            }
         }
     }
 
@@ -112,6 +120,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun lap() {
+        if (currentDeciSecond == 0) return
         val container = binding.lapContainerLinearLayout
         TextView(this).apply {
             textSize = 20f
@@ -119,7 +128,7 @@ class MainActivity : AppCompatActivity() {
             val minutes = currentDeciSecond.div(10) / 60
             val seconds = currentDeciSecond.div(10) % 60
             val deciSeconds = currentDeciSecond % 10
-            text = container.childCount.inc().toString() + String.format(
+            text = "${container.childCount.inc()}. " + String.format(
                 "%02d:%02d %01d",
                 minutes,
                 seconds,
