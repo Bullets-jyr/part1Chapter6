@@ -3,8 +3,11 @@ package kr.co.bullets.part1chapter6
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
+import androidx.core.view.setPadding
 import kr.co.bullets.part1chapter6.databinding.ActivityMainBinding
 import kr.co.bullets.part1chapter6.databinding.DialogCountdownSettingBinding
 import java.util.Timer
@@ -12,10 +15,13 @@ import kotlin.concurrent.timer
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+
     // 카운트다운 초기 세팅
     private var countdownSecond = 10
+
     // 진행되는 카운트다운
     private var currentCountdownDeciSecond = countdownSecond * 10
+
     // 0.1초 단위의 숫자
     private var currentDeciSecond = 0
     private var timer: Timer? = null
@@ -106,7 +112,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun lap() {
-
+        val container = binding.lapContainerLinearLayout
+        TextView(this).apply {
+            textSize = 20f
+            gravity = Gravity.CENTER
+            val minutes = currentDeciSecond.div(10) / 60
+            val seconds = currentDeciSecond.div(10) % 60
+            val deciSeconds = currentDeciSecond % 10
+            text = container.childCount.inc().toString() + String.format(
+                "%02d:%02d %01d",
+                minutes,
+                seconds,
+                deciSeconds
+            )
+            setPadding(30)
+        }.let { lapTextView ->
+            container.addView(lapTextView, 0)
+        }
     }
 
     private fun showCountdownSettingDialog() {
